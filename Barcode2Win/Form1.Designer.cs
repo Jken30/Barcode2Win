@@ -32,6 +32,7 @@
             this.labelDisplay = new System.Windows.Forms.Label();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.Send = new System.Windows.Forms.Button();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -57,9 +58,9 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 127);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 173);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(204, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(206, 22);
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -70,11 +71,22 @@
             this.toolStripStatusLabel.Text = "\"Waiting for barcode...\"";
             this.toolStripStatusLabel.Click += new System.EventHandler(this.toolStripStatusLabel1_Click);
             // 
+            // Send
+            // 
+            this.Send.Location = new System.Drawing.Point(63, 126);
+            this.Send.Name = "Send";
+            this.Send.Size = new System.Drawing.Size(75, 23);
+            this.Send.TabIndex = 3;
+            this.Send.Text = "Add";
+            this.Send.UseVisualStyleBackColor = true;
+            this.Send.Click += new System.EventHandler(this.Send_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(204, 149);
+            this.ClientSize = new System.Drawing.Size(206, 195);
+            this.Controls.Add(this.Send);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.labelDisplay);
             this.Controls.Add(this.textBoxBarcode);
@@ -94,6 +106,7 @@
         private System.Windows.Forms.Label labelDisplay;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
+        private System.Windows.Forms.Button Send;
     }
 }
 
