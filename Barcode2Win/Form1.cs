@@ -51,6 +51,8 @@ namespace Barcode2Win
             {
                 // Accept incoming client connections
                 TcpClient tcpClient = tcpListener.AcceptTcpClient();
+                       
+                      
                 Console.WriteLine("Client connected");
 
                 // Get the stream for reading data
@@ -103,7 +105,7 @@ namespace Barcode2Win
 
         private void textBoxBarcode_TextChanged(object sender, EventArgs e)
         {
-
+            // Placeholder for any potential use of the barcode text changed event
         }
 
         private void Send_Click(object sender, EventArgs e)
@@ -148,7 +150,6 @@ namespace Barcode2Win
                     connection.Close();
                 }
             }
-        }
 
     }
 }
