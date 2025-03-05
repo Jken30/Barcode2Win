@@ -18,8 +18,10 @@ namespace Barcode2Win
     {
 
         private TcpListener tcpListener;
-        private const int Port = 12345; // You can choose any available port.
-        private string scannedBarcode = string.Empty; // To hold the scanned barcode data
+        private Thread listenerThread;
+        private const int Port = 12345; 
+        private bool isListening = false;
+        private string scannedBarcode = string.Empty; 
 
 
         public Form1()
@@ -29,53 +31,68 @@ namespace Barcode2Win
 
         private void toolStripStatusLabel1_Click(object sender, EventArgs e)
         {
-
+            // Placeholder for any potential use of the status label click event
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             tcpListener = new TcpListener(IPAddress.Any, Port);
+            tcpListener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             tcpListener.Start();
 
+            isListening = true; // Set the flag to true
+
             // Start a new thread to listen for incoming connections
-            Thread listenerThread = new Thread(new ThreadStart(ListenForClients));
+            listenerThread = new Thread(new ThreadStart(ListenForClients));
             listenerThread.Start();
 
-            // Update status message
+
             toolStripStatusLabel.Text = "Waiting for barcode data...";
         }
 
         private void ListenForClients()
         {
-            while (true)
+            while (isListening)
             {
-                // Accept incoming client connections
-                TcpClient tcpClient = tcpListener.AcceptTcpClient();
+                try
+                {
+                    // Accept incoming client connections
+                    if (tcpListener.Pending()) // Check if there's any client pending
+                    {
+
+                        TcpClient tcpClient = tcpListener.AcceptTcpClient();
                        
                       
-                Console.WriteLine("Client connected");
+                        Console.WriteLine("Client connected");  
+                       
+                       
+                        NetworkStream networkStream = tcpClient.GetStream();
+                        
+                        byte[] buffer = new byte[1024]; // Buffer to store incoming data
+                        int bytesRead;
 
-                // Get the stream for reading data
-                NetworkStream networkStream = tcpClient.GetStream();
+                        while ((bytesRead = networkStream.Read(buffer, 0, buffer.Length)) != 0)
+                        {
+                            string barcodeData = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+                            Console.WriteLine("Barcode Data Received: " + barcodeData);
+                            UpdateBarcodeDisplay(barcodeData);
+                        }
 
-                byte[] buffer = new byte[1024]; // Buffer to store incoming data
-                int bytesRead;
-
-                while ((bytesRead = networkStream.Read(buffer, 0, buffer.Length)) != 0)
-                {
-                    string barcodeData = Encoding.ASCII.GetString(buffer, 0, bytesRead);
-                    Console.WriteLine("Barcode Data Received: " + barcodeData);
-                    UpdateBarcodeDisplay(barcodeData);
+                        tcpClient.Close();
+                    }
                 }
-
-                tcpClient.Close();
+                catch (Exception ex)
+                {
+                    // Handle exception, if any
+                    Console.WriteLine("Exception: " + ex.Message);
+                }
             }
         }
 
         private void UpdateBarcodeDisplay(string barcodeData)
         {
             // Use Invoke to update UI elements on the main thread
-            // Use Invoke to update UI elements on the main thread
+
             if (InvokeRequired)
             {
                 Invoke(new Action<string>(UpdateBarcodeDisplay), barcodeData);
@@ -95,10 +112,19 @@ namespace Barcode2Win
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // Stop the TCP listener when the form is closing
+            // Set the flag to false to stop the listening thread
+            isListening = false;
+
+            // Stop the TCP listener and close any client connections
             if (tcpListener != null)
             {
                 tcpListener.Stop();
+            }
+
+            // Ensure the listener thread has finished
+            if (listenerThread != null && listenerThread.IsAlive)
+            {
+                listenerThread.Join(); // Wait for the listener thread to finish
             }
         }
 
@@ -121,7 +147,7 @@ namespace Barcode2Win
             // Send the barcode to the database
             try
             {
-                InsertBarcodeToDatabase(barcode); // Use the barcode from the TextBox
+                InsertBarcodeToDatabase(barcode); 
                 MessageBox.Show("Barcode data successfully sent to the database.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
@@ -132,7 +158,7 @@ namespace Barcode2Win
 
         private void InsertBarcodeToDatabase(string barcode)
         {
-            // Define your connection string (make sure to replace the placeholders with actual values)
+            
             string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=Barcode;Integrated Security=True;Connect Timeout=30;";
 
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -141,7 +167,7 @@ namespace Barcode2Win
 
                 using (SqlCommand cmd = new SqlCommand(query, connection))
                 {
-                    // Add parameters to prevent SQL injection
+                   
                     cmd.Parameters.AddWithValue("@BarcodeData", barcode);
                     cmd.Parameters.AddWithValue("@ScannedAt", DateTime.Now);
 
@@ -151,5 +177,6 @@ namespace Barcode2Win
                 }
             }
 
+        }
     }
 }
