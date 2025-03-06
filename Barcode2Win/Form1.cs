@@ -60,7 +60,6 @@ namespace Barcode2Win
                     if (tcpListener.Pending()) // Check if there's any client pending
                     {
 
-                        TcpClient tcpClient = tcpListener.AcceptTcpClient();
                        
                       
                         Console.WriteLine("Client connected");  
@@ -92,7 +91,6 @@ namespace Barcode2Win
         private void UpdateBarcodeDisplay(string barcodeData)
         {
             // Use Invoke to update UI elements on the main thread
-
             if (InvokeRequired)
             {
                 Invoke(new Action<string>(UpdateBarcodeDisplay), barcodeData);
@@ -108,7 +106,6 @@ namespace Barcode2Win
                 MessageBox.Show("Barcode data received: " + barcodeData);
             }
         }
-
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
