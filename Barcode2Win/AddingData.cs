@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,26 +13,27 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+
 namespace Barcode2Win
 {
-    public partial class Form1 : Form
+    public partial class AddingData : Form
     {
 
         private TcpListener tcpListener;
         private Thread listenerThread;
-        private const int Port = 12345; 
+        private const int Port = 12345;
         private bool isListening = false;
-        private string scannedBarcode = string.Empty; 
+        private string scannedBarcode = string.Empty;
 
 
-        public Form1()
+        public AddingData()
         {
             InitializeComponent();
         }
 
         private void toolStripStatusLabel1_Click(object sender, EventArgs e)
         {
-            // Placeholder for any potential use of the status label click event
+            
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -40,7 +42,7 @@ namespace Barcode2Win
             tcpListener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             tcpListener.Start();
 
-            isListening = true; // Set the flag to true
+            isListening = true; 
 
             // Start a new thread to listen for incoming connections
             listenerThread = new Thread(new ThreadStart(ListenForClients));
@@ -48,6 +50,9 @@ namespace Barcode2Win
 
 
             toolStripStatusLabel.Text = "Waiting for barcode data...";
+
+
+
         }
 
         private void ListenForClients()
@@ -59,14 +64,13 @@ namespace Barcode2Win
                     // Accept incoming client connections
                     if (tcpListener.Pending()) // Check if there's any client pending
                     {
+             
+                        TcpClient tcpClient = tcpListener.AcceptTcpClient();
+                                Console.WriteLine("Client connected");
 
-                       
-                      
-                        Console.WriteLine("Client connected");  
-                       
-                       
+
                         NetworkStream networkStream = tcpClient.GetStream();
-                        
+
                         byte[] buffer = new byte[1024]; // Buffer to store incoming data
                         int bytesRead;
 
@@ -82,7 +86,7 @@ namespace Barcode2Win
                 }
                 catch (Exception ex)
                 {
-                    // Handle exception, if any
+                    
                     Console.WriteLine("Exception: " + ex.Message);
                 }
             }
@@ -102,33 +106,43 @@ namespace Barcode2Win
                 labelDisplay.Text = "Scanned Barcode: " + barcodeData;
                 toolStripStatusLabel.Text = "Barcode received successfully!";
 
-                // Debugging - Show a message box with the barcode data
+              
                 MessageBox.Show("Barcode data received: " + barcodeData);
             }
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // Set the flag to false to stop the listening thread
-            isListening = false;
-
-            // Stop the TCP listener and close any client connections
-            if (tcpListener != null)
+            try
             {
-                tcpListener.Stop();
+               
+                isListening = false;
+
+                
+                if (tcpListener != null)
+                {
+                    tcpListener.Stop();
+                }
+
+                
+                if (listenerThread != null && listenerThread.IsAlive)
+                {
+                    listenerThread.Join();
+                }
+
+                
             }
-
-            // Ensure the listener thread has finished
-            if (listenerThread != null && listenerThread.IsAlive)
+            finally
             {
-                listenerThread.Join(); // Wait for the listener thread to finish
+                
+                Environment.Exit(0);  
             }
         }
 
 
         private void textBoxBarcode_TextChanged(object sender, EventArgs e)
         {
-            // Placeholder for any potential use of the barcode text changed event
+            
         }
 
         private void Send_Click(object sender, EventArgs e)
@@ -141,11 +155,37 @@ namespace Barcode2Win
                 return;
             }
 
-            // Send the barcode to the database
+            // Get product details from the TextBox controls
+            string productName = textProductName.Text.Trim(); // Assuming textBoxProductName is the TextBox for product name
+            decimal productPrice = 0m;
+            int productQuantity = 0;
+
+            // Validate the product price and quantity inputs
+            if (!decimal.TryParse(textBoxProductPrice.Text, out productPrice))
+            {
+                MessageBox.Show("Invalid product price.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (!int.TryParse(textBoxProductQuantity.Text, out productQuantity))
+            {
+                MessageBox.Show("Invalid product quantity.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Send the barcode and product details to the database
             try
             {
-                InsertBarcodeToDatabase(barcode); 
+                InsertBarcodeToDatabase(barcode, productName, productPrice, productQuantity);
                 MessageBox.Show("Barcode data successfully sent to the database.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+
+                textBoxBarcode.Clear(); 
+                textProductName.Clear(); 
+                textBoxProductPrice.Clear(); 
+                textBoxProductQuantity.Clear(); 
+
+
             }
             catch (Exception ex)
             {
@@ -153,19 +193,22 @@ namespace Barcode2Win
             }
         }
 
-        private void InsertBarcodeToDatabase(string barcode)
+        private void InsertBarcodeToDatabase(string barcode, string productName, decimal productPrice, int productQuantity)
         {
-            
+
             string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=Barcode;Integrated Security=True;Connect Timeout=30;";
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string query = "INSERT INTO BarcodeTable (BarcodeData, ScannedAt) VALUES (@BarcodeData, @ScannedAt)";
+                string query = "INSERT INTO BarcodeTable (BarcodeData, ProductName, ProductPrice, ProductQuantity, ScannedAt) VALUES (@BarcodeData, @ProductName, @ProductPrice, @ProductQuantity, @ScannedAt)";
 
                 using (SqlCommand cmd = new SqlCommand(query, connection))
                 {
-                   
+
                     cmd.Parameters.AddWithValue("@BarcodeData", barcode);
+                    cmd.Parameters.AddWithValue("@ProductName", productName);
+                    cmd.Parameters.AddWithValue("@ProductPrice", productPrice);
+                    cmd.Parameters.AddWithValue("@ProductQuantity", productQuantity);
                     cmd.Parameters.AddWithValue("@ScannedAt", DateTime.Now);
 
                     connection.Open();
@@ -173,7 +216,21 @@ namespace Barcode2Win
                     connection.Close();
                 }
             }
+        }
 
+        private void textBoxProductName_TextChanged(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void textBoxProductPrice_TextChanged(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void textBoxProductQuantity_TextChanged(object sender, EventArgs e)
+        {
+           
         }
     }
 }
