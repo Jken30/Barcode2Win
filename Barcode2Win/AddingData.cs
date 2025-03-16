@@ -95,7 +95,7 @@ namespace Barcode2Win
 
         private void UpdateBarcodeDisplay(string barcodeData)
         {
-            // Use Invoke to update UI elements on the main thread
+           
             if (InvokeRequired)
             {
                 Invoke(new Action<string>(UpdateBarcodeDisplay), barcodeData);
@@ -147,7 +147,7 @@ namespace Barcode2Win
 
         private void Send_Click(object sender, EventArgs e)
         {
-            string barcode = textBoxBarcode.Text.Trim(); // Get the barcode text from the TextBox
+            string barcode = textBoxBarcode.Text.Trim(); 
 
             if (string.IsNullOrEmpty(barcode))
             {
@@ -156,11 +156,11 @@ namespace Barcode2Win
             }
 
             // Get product details from the TextBox controls
-            string productName = textProductName.Text.Trim(); // Assuming textBoxProductName is the TextBox for product name
+            string productName = textProductName.Text.Trim();
             decimal productPrice = 0m;
             int productQuantity = 0;
 
-            // Validate the product price and quantity inputs
+            
             if (!decimal.TryParse(textBoxProductPrice.Text, out productPrice))
             {
                 MessageBox.Show("Invalid product price.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -173,7 +173,7 @@ namespace Barcode2Win
                 return;
             }
 
-            // Send the barcode and product details to the database
+ 
             try
             {
                 InsertBarcodeToDatabase(barcode, productName, productPrice, productQuantity);

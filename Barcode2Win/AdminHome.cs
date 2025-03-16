@@ -68,7 +68,7 @@ namespace Barcode2Win
 
         private void Admin_Load(object sender, EventArgs e)
         {
-            barcodeTable.Clear(); // ❌ Don't load data initially
+            barcodeTable.Clear();
             dataGridView1.DataSource = barcodeTable;
         }
 
@@ -109,12 +109,12 @@ namespace Barcode2Win
 
             if (string.IsNullOrEmpty(searchText))
             {
-                barcodeTable.Clear(); // 🧹 If search box is empty, clear the table
+                barcodeTable.Clear(); 
                 dataGridView1.DataSource = null;
             }
             else
             {
-                LoadData(searchText); // 🔍 Otherwise, fetch results dynamically
+                LoadData(searchText); 
             }
 
         }
@@ -127,8 +127,8 @@ namespace Barcode2Win
 
         private void AddData_Click(object sender, EventArgs e)
         {
-            AddingData Open = new AddingData(); // Create an instance of the new form
-            Open.Show(); // Open without closing the main form
+            AddingData Open = new AddingData();
+            Open.Show(); 
         }
     }
 }
