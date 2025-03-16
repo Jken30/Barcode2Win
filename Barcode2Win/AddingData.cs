@@ -115,27 +115,25 @@ namespace Barcode2Win
         {
             try
             {
-               
-                isListening = false;
+                isListening = false; // 🛑 Stop the listener flag
 
-                
                 if (tcpListener != null)
                 {
-                    tcpListener.Stop();
+                    tcpListener.Stop(); // 🛑 Stop the TCP listener
                 }
 
-                
                 if (listenerThread != null && listenerThread.IsAlive)
                 {
-                    listenerThread.Join();
+                    listenerThread.Abort(); // 🚫 Kill the thread (or use a safer way)
                 }
-
-                
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error closing application: " + ex.Message);
             }
             finally
             {
-                
-                Environment.Exit(0);  
+                Environment.Exit(0); // 🚀 Ensure the app fully exits
             }
         }
 
