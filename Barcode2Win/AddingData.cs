@@ -29,6 +29,7 @@ namespace Barcode2Win
         public AddingData()
         {
             InitializeComponent();
+            FormClosing += MainForm_FormClosing;
         }
 
         private void toolStripStatusLabel1_Click(object sender, EventArgs e)
@@ -115,16 +116,16 @@ namespace Barcode2Win
         {
             try
             {
-                isListening = false; // 🛑 Stop the listener flag
+                isListening = false;
 
                 if (tcpListener != null)
                 {
-                    tcpListener.Stop(); // 🛑 Stop the TCP listener
+                    tcpListener.Stop();
                 }
 
                 if (listenerThread != null && listenerThread.IsAlive)
                 {
-                    listenerThread.Abort(); // 🚫 Kill the thread (or use a safer way)
+                    listenerThread.Abort();
                 }
             }
             catch (Exception ex)
@@ -133,9 +134,10 @@ namespace Barcode2Win
             }
             finally
             {
-                Environment.Exit(0); // 🚀 Ensure the app fully exits
+                Environment.Exit(0);
             }
         }
+        
 
 
         private void textBoxBarcode_TextChanged(object sender, EventArgs e)
