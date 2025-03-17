@@ -98,6 +98,18 @@
     <Compile Include="AdminHome.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Cashier.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Cashier.Designer.cs">
+      <DependentUpon>Cashier.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CheckPrice.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CheckPrice.Designer.cs">
+      <DependentUpon>CheckPrice.cs</DependentUpon>
+    </Compile>
     <Compile Include="Home.Designer.cs">
       <DependentUpon>AdminHome.cs</DependentUpon>
     </Compile>
@@ -108,6 +120,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="AdminHome.resx">
       <DependentUpon>AdminHome.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Cashier.resx">
+      <DependentUpon>Cashier.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CheckPrice.resx">
+      <DependentUpon>CheckPrice.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

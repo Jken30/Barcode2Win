@@ -17,7 +17,7 @@ namespace Barcode2Win
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Admin());
+            Application.Run(new Cashier());
         }
     }
 }

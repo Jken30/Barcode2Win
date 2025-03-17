@@ -77,7 +77,9 @@ namespace Barcode2Win
 
         private void Dashboard_Click(object sender, EventArgs e)
         {
-
+            Cashier Open = new Cashier();
+            Open.Show();
+            this.Hide();
         }
 
         private void ProductManagement_Click(object sender, EventArgs e)
@@ -128,7 +130,8 @@ namespace Barcode2Win
         private void AddData_Click(object sender, EventArgs e)
         {
             AddingData Open = new AddingData();
-            Open.Show(); 
+            Open.Show();
+            
         }
     }
 }
